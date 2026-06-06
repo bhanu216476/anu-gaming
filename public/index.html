@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@nu gaming | Esports Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-gradient"></div>
+    <div class="ambient-grid"></div>
+    <div class="ambient-beams"></div>
+    <div class="ambient-streaks" id="ambientStreaks"></div>
+    <div class="ambient-orb orb-a"></div>
+    <div class="ambient-orb orb-b"></div>
+    <div class="ambient-orb orb-c"></div>
+    <div class="ambient-particles" id="ambientParticles"></div>
+    <div class="ambient-vignette"></div>
+  </div>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <header class="topbar glass">
+    <div class="brand">@nu gaming</div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#intel">Pro Intel</a>
+      <a href="#register">Register</a>
+    </nav>
+    <a class="btn ghost" href="#register">Join Now</a>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <p class="eyebrow">Tournament Platform</p>
+      <h1>Enter the Next-Gen <span>Esports Arena</span></h1>
+      <p class="sub">Live public API feeds, smooth cinematic visuals, and instant squad registration powered by @nu gaming backend.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#register">Register Squad</a>
+        <button class="btn ghost" id="refreshData" type="button">Refresh Live Data</button>
+      </div>
+      <div class="stats-grid">
+        <article class="card"><h3 id="players">--</h3><p>Players</p></article>
+        <article class="card"><h3 id="teams">--</h3><p>Teams</p></article>
+        <article class="card"><h3 id="tournaments">--</h3><p>Tournaments</p></article>
+        <article class="card"><h3 id="prizePool">--</h3><p>Prize Pool</p></article>
+      </div>
+      <p class="countdown">Next event in <strong id="countdownText">Loading...</strong></p>
+    </section>
+
+    <section class="panel" id="intel">
+      <div>
+        <h2>OpenDota Pro Players</h2>
+        <p>Using free public API data (from public-apis list) to show active pro scene snapshot.</p>
+        <ul id="proPlayers" class="list"></ul>
+      </div>
+      <div>
+        <h2>CS2 News Feed</h2>
+        <p>Steam public endpoint for latest update headlines.</p>
+        <ul id="steamNews" class="list"></ul>
+      </div>
+    </section>
+
+    <section class="panel register" id="register">
+      <div>
+        <h2>Register Your Squad</h2>
+        <p>Fast application through local @nu gaming backend.</p>
+      </div>
+      <form id="registerForm" class="form">
+        <input name="squadName" placeholder="Squad Name" required />
+        <input name="captainUid" placeholder="Captain UID" required />
+        <input name="email" type="email" placeholder="Email" required />
+        <textarea name="message" placeholder="Message (optional)"></textarea>
+        <button class="btn" type="submit">Submit Registration</button>
+      </form>
+      <p id="formStatus" class="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
