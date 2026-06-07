@@ -1,84 +1,895 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@nu gaming | Esports Arena</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@nu gaming - Free Fire Tournament Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#070b14;
+ --panel:#101a2a;
+ --line:rgba(255,255,255,.14);
+ --text:#f5f7ff;
+ --muted:#a7afc4;
+ --orange:#ff7a00;
+ --orange-soft:#ff9d3d;
+ --blue:#2d8cff;
+ --glass:rgba(16,22,34,.64);
+ --ease:cubic-bezier(.16,.84,.22,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+body{
+ background:radial-gradient(circle at 8% 8%,rgba(255,122,0,.14),transparent 40%),radial-gradient(circle at 88% 18%,rgba(45,140,255,.12),transparent 42%),var(--bg);
+ color:var(--text);
+ overflow-x:hidden;
+ font-family:Oxanium,sans-serif;
+ cursor:none;
+}
+.scroll-progress{
+ position:fixed;
+ top:0;
+ left:0;
+ width:0;
+ height:3px;
+ z-index:2200;
+ background:linear-gradient(90deg,var(--orange),var(--orange-soft));
+ box-shadow:0 0 16px rgba(255,122,0,.85);
+ transform-origin:left center;
+ will-change:width;
+}
+.atmosphere{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none}
+.gradient-field{
+ position:absolute;
+ inset:-30%;
+ background:conic-gradient(from 0deg at 52% 45%,rgba(255,122,0,.07),transparent 26%,rgba(45,140,255,.08),transparent 58%,rgba(255,122,0,.08));
+ animation:rotateField 45s linear infinite;
+}
+.fog{
+ position:absolute;
+ inset:0;
+ background:radial-gradient(circle at 10% 70%,rgba(255,122,0,.06),transparent 36%),radial-gradient(circle at 80% 28%,rgba(45,140,255,.07),transparent 42%);
+ filter:blur(22px);
+ animation:fogPulse 12s ease-in-out infinite alternate;
+}
+.blob{position:absolute;border-radius:50%;filter:blur(95px);opacity:.2}
+.blob-orange{width:420px;height:420px;left:-180px;top:-140px;background:var(--orange);animation:driftOne 16s ease-in-out infinite}
+.blob-blue{width:380px;height:380px;right:-140px;bottom:-160px;background:var(--blue);animation:driftTwo 19s ease-in-out infinite}
+.particles{position:absolute;inset:0}
+.particle{
+ position:absolute;
+ width:3px;
+ height:3px;
+ border-radius:50%;
+ opacity:.32;
+ background:rgba(255,255,255,.8);
+ animation:floatParticle var(--dur) linear infinite;
+ animation-delay:var(--delay);
+ will-change:transform,opacity;
+}
+nav{
+ position:fixed;
+ top:0;
+ width:100%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:18px 6%;
+ background:transparent;
+ border-bottom:1px solid transparent;
+ z-index:1200;
+ transition:background .45s var(--ease),backdrop-filter .45s var(--ease),border-color .45s var(--ease),padding .35s var(--ease);
+}
+nav.scrolled{
+ background:var(--glass);
+ backdrop-filter:blur(14px);
+ border-color:rgba(255,255,255,.14);
+ padding:13px 6%;
+}
+.logo{
+ font-size:28px;
+ font-weight:800;
+ color:var(--orange);
+ letter-spacing:.8px;
+ text-shadow:0 0 0 rgba(255,122,0,0);
+ opacity:0;
+ transform:translateY(-8px) scale(.92);
+ transition:opacity .78s var(--ease),transform .9s var(--ease),text-shadow 1.1s var(--ease);
+}
+body.loaded .logo{
+ opacity:1;
+ transform:translateY(0) scale(1);
+ text-shadow:0 0 16px rgba(255,122,0,.85),0 0 38px rgba(255,122,0,.42);
+}
+nav ul{
+ --indicator-left:0px;
+ --indicator-width:0px;
+ position:relative;
+ display:flex;
+ gap:20px;
+ list-style:none;
+}
+nav ul:after{
+ content:"";
+ position:absolute;
+ left:var(--indicator-left);
+ bottom:-8px;
+ width:var(--indicator-width);
+ height:2px;
+ border-radius:10px;
+ background:var(--orange);
+ box-shadow:0 0 12px rgba(255,122,0,.8);
+ transition:left .35s var(--ease),width .35s var(--ease),opacity .35s var(--ease);
+ opacity:.95;
+}
+nav a{
+ text-decoration:none;
+ color:var(--text);
+ font-family:Rajdhani,sans-serif;
+ font-weight:700;
+ letter-spacing:.6px;
+ padding-bottom:5px;
+ transition:color .3s var(--ease),text-shadow .3s var(--ease);
+}
+nav a.active,nav a:hover{
+ color:var(--orange);
+ text-shadow:0 0 16px rgba(255,122,0,.65);
+}
+.btn{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ background:linear-gradient(135deg,#ff7a00,#ff9f42);
+ border:1px solid rgba(255,255,255,.14);
+ color:#fff;
+ padding:12px 22px;
+ border-radius:10px;
+ cursor:none;
+ font-family:Rajdhani,sans-serif;
+ font-weight:700;
+ letter-spacing:.7px;
+ transform:translate3d(0,0,0);
+ transition:transform .25s var(--ease),box-shadow .35s var(--ease),filter .3s var(--ease);
+ animation:btnPulse 3.8s ease-in-out infinite;
+ will-change:transform;
+}
+.btn:before{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(120deg,transparent 10%,rgba(255,255,255,.36) 46%,transparent 72%);
+ transform:translateX(-120%);
+ transition:transform .8s var(--ease);
+ pointer-events:none;
+}
+.btn:hover:before{transform:translateX(120%)}
+.btn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.2),0 0 26px rgba(255,122,0,.45)}
+.btn:active{transform:scale(.96)}
+.ripple{
+ position:absolute;
+ border-radius:50%;
+ transform:scale(0);
+ background:rgba(255,255,255,.45);
+ pointer-events:none;
+ animation:ripple .6s ease-out;
+}
+.hero{
+ position:relative;
+ height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:20px;
+ overflow:hidden;
+ background:linear-gradient(rgba(5,8,14,.72),rgba(5,8,14,.82)),url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600');
+ background-size:cover;
+ background-position:center;
+ transform:translateZ(0) scale(1);
+ will-change:transform,background-position;
+ animation:heroBgZoom 24s ease-in-out infinite alternate;
+}
+.hero:before{
+ content:"";
+ position:absolute;
+ inset:-8%;
+ background:
+ linear-gradient(130deg,rgba(255,122,0,.12) 0%,transparent 24%),
+ linear-gradient(130deg,transparent 34%,rgba(45,140,255,.1) 47%,transparent 58%),
+ linear-gradient(130deg,transparent 63%,rgba(255,122,0,.1) 70%,transparent 82%);
+ animation:beamMove 16s linear infinite;
+ mix-blend-mode:screen;
+ pointer-events:none;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.12) 50%,transparent 78%);
+ transform:translateX(-130%);
+ animation:cinematicSweep 10.5s ease-in-out infinite;
+ pointer-events:none;
+}
+.hero-content{position:relative;z-index:2;will-change:transform}
+.hero h1{
+ font-size:clamp(2.2rem,6vw,4.4rem);
+ letter-spacing:2px;
+ line-height:1.08;
+ font-family:Rajdhani,sans-serif;
+}
+.hero-title .char{
+ display:inline-block;
+ opacity:0;
+ transform:translateY(22px) scale(.85) rotateX(-58deg);
+ transform-origin:bottom center;
+ transition:transform .78s var(--ease),opacity .78s var(--ease);
+ transition-delay:calc(var(--i) * 44ms);
+}
+body.loaded .hero-title .char{opacity:1;transform:translateY(0) scale(1) rotateX(0deg)}
+.hero p{
+ margin:15px 0 25px;
+ color:var(--muted);
+ opacity:0;
+ transform:translateY(20px);
+ transition:opacity .84s var(--ease) 1.04s,transform .84s var(--ease) 1.04s;
+}
+body.loaded .hero p{opacity:1;transform:translateY(0)}
+.hero .btn{
+ opacity:0;
+ transform:translateY(24px) scale(.95);
+ transition:opacity .74s var(--ease) 1.26s,transform .74s var(--ease) 1.26s,box-shadow .3s var(--ease);
+}
+body.loaded .hero .btn{opacity:1;transform:translateY(0) scale(1)}
+section{
+ position:relative;
+ padding:90px 8%;
+ z-index:1;
+}
+section:before{
+ content:"";
+ position:absolute;
+ inset:6% 3%;
+ background:
+ repeating-linear-gradient(128deg,rgba(255,122,0,.09) 0 1px,transparent 1px 55px),
+ repeating-linear-gradient(128deg,rgba(45,140,255,.07) 0 1px,transparent 1px 70px);
+ opacity:.17;
+ transform:translate3d(0,0,0);
+ animation:energyDrift 18s linear infinite;
+ pointer-events:none;
+ z-index:-1;
+}
+.title{
+ text-align:center;
+ color:var(--orange);
+ font-size:clamp(2rem,5vw,2.7rem);
+ margin-bottom:40px;
+ font-family:Rajdhani,sans-serif;
+ letter-spacing:1px;
+ text-shadow:0 0 16px rgba(255,122,0,.22);
+}
+.stats,.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.card{
+ position:relative;
+ background:rgba(255,255,255,.05);
+ backdrop-filter:blur(12px);
+ padding:25px;
+ border-radius:20px;
+ border:1px solid var(--line);
+ transform-style:preserve-3d;
+ transform:perspective(1000px) rotateX(0deg) rotateY(0deg);
+ transition:transform .25s var(--ease),box-shadow .25s var(--ease),border-color .25s var(--ease);
+ will-change:transform,box-shadow;
+}
+.card:before{
+ content:"";
+ position:absolute;
+ inset:0;
+ border-radius:inherit;
+ background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.26) 46%,transparent 66%);
+ transform:translateX(-140%);
+ pointer-events:none;
+}
+.card:hover:before{animation:reflectSweep .95s var(--ease)}
+.card:hover{
+ border-color:rgba(255,122,0,.42);
+ box-shadow:0 16px 34px rgba(5,8,14,.55),0 0 22px rgba(255,122,0,.24);
+}
+.stat{text-align:center}
+.stat h2{color:var(--orange)}
+.timer{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
+.timebox{
+ background:linear-gradient(145deg,rgba(18,29,45,.9),rgba(12,20,32,.88));
+ padding:20px;
+ border-radius:15px;
+ min-width:110px;
+ text-align:center;
+ border:1px solid var(--line);
+ box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.timebox h3{font-size:34px;color:var(--orange)}
+.trophy-stage{
+ position:relative;
+ width:min(460px,94%);
+ aspect-ratio:1/.84;
+ margin:0 auto 34px;
+ display:grid;
+ place-items:center;
+ overflow:visible;
+}
+.trophy-stage:before{
+ content:"";
+ position:absolute;
+ inset:18% -8%;
+ background:radial-gradient(circle,rgba(255,174,74,.34),transparent 60%);
+ filter:blur(12px);
+}
+.trophy-stage:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(110deg,transparent 28%,rgba(255,255,255,.24) 52%,transparent 76%);
+ transform:translateX(-125%);
+ animation:cinematicSweep 11.2s ease-in-out infinite;
+ pointer-events:none;
+}
+.trophy-core{
+ position:relative;
+ width:132px;
+ height:182px;
+ border-radius:26px 26px 36px 36px;
+ background:linear-gradient(180deg,#ffd47a,#f4a41f 58%,#a96a0f 100%);
+ box-shadow:0 0 40px rgba(255,177,74,.48),inset 0 0 0 1px rgba(255,255,255,.35);
+ animation:trophyFloat 4.8s ease-in-out infinite;
+}
+.trophy-core:before,.trophy-core:after{
+ content:"";
+ position:absolute;
+ top:30px;
+ width:36px;
+ height:56px;
+ border:7px solid #f4b142;
+ border-radius:50%;
+}
+.trophy-core:before{left:-28px;border-right:none}
+.trophy-core:after{right:-28px;border-left:none}
+.trophy-halo{
+ position:absolute;
+ width:220px;
+ height:220px;
+ border-radius:50%;
+ border:1px solid rgba(255,180,72,.62);
+ box-shadow:0 0 28px rgba(255,180,72,.3);
+ animation:haloSpin 14s linear infinite;
+}
+.trophy-rays{
+ position:absolute;
+ width:340px;
+ height:340px;
+ border-radius:50%;
+ background:conic-gradient(from 0deg,rgba(255,180,72,.32),transparent 16%,rgba(255,180,72,.12),transparent 48%,rgba(255,180,72,.24),transparent 78%,rgba(255,180,72,.26));
+ filter:blur(9px);
+ animation:haloSpin 20s linear infinite reverse;
+}
+.trophy-particle{
+ position:absolute;
+ width:4px;
+ height:4px;
+ border-radius:50%;
+ background:#ffd67d;
+ box-shadow:0 0 10px rgba(255,214,125,.8);
+ animation:spark 2.6s linear infinite;
+}
+.trophy-particle:nth-child(4){animation-delay:.4s}
+.trophy-particle:nth-child(5){animation-delay:.9s}
+.trophy-particle:nth-child(6){animation-delay:1.4s}
+form{max-width:650px;margin:auto;display:flex;flex-direction:column;gap:15px}
+input,textarea{
+ padding:14px;
+ border:1px solid rgba(255,255,255,.09);
+ border-radius:10px;
+ background:var(--panel);
+ color:#fff;
+ outline:none;
+ transition:border-color .3s var(--ease),box-shadow .3s var(--ease);
+}
+input:focus,textarea:focus{border-color:rgba(255,122,0,.62);box-shadow:0 0 0 3px rgba(255,122,0,.16)}
+footer{padding:35px;text-align:center;background:#0f1626;border-top:1px solid rgba(255,255,255,.08)}
+.hamburger{display:none;font-size:30px}
+.cursor-dot,.cursor-ring{
+ position:fixed;
+ top:0;
+ left:0;
+ pointer-events:none;
+ z-index:2500;
+ transform:translate3d(-50%,-50%,0);
+}
+.cursor-dot{
+ width:8px;
+ height:8px;
+ border-radius:50%;
+ background:var(--orange);
+ box-shadow:0 0 12px rgba(255,122,0,.95);
+}
+.cursor-ring{
+ width:34px;
+ height:34px;
+ border-radius:50%;
+ border:1px solid rgba(255,122,0,.45);
+ background:radial-gradient(circle,rgba(255,122,0,.16),transparent 65%);
+ transition:transform .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
+}
+.cursor-ring.active{
+ transform:translate3d(-50%,-50%,0) scale(1.45);
+ border-color:rgba(255,159,66,.85);
+ background:radial-gradient(circle,rgba(255,122,0,.28),transparent 66%);
+}
+[data-reveal]{
+ opacity:0;
+ transition:opacity .8s var(--ease),transform .85s var(--ease);
+ will-change:transform,opacity;
+}
+.reveal-slide-up{transform:translateY(42px)}
+.reveal-scale{transform:scale(.94)}
+.reveal-fade-lift{transform:translateY(28px)}
+.reveal-zoom{transform:scale(.9)}
+.reveal-left{transform:translateX(-34px)}
+.in-view{opacity:1;transform:translate(0) scale(1)}
+.reveal-stagger .card{opacity:0;transform:translateY(24px) scale(.96);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal-stagger.in-view .card{opacity:1;transform:translateY(0) scale(1)}
+.reveal-stagger.in-view .card:nth-child(2){transition-delay:.16s}
+.reveal-stagger.in-view .card:nth-child(3){transition-delay:.32s}
+@keyframes btnPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.05)}}
+@keyframes ripple{to{transform:scale(4.8);opacity:0}}
+@keyframes heroBgZoom{0%{background-size:100%}100%{background-size:108%}}
+@keyframes beamMove{0%{transform:translateX(-7%) translateY(-2%)}100%{transform:translateX(7%) translateY(2%)}}
+@keyframes energyDrift{0%{transform:translateX(0)}100%{transform:translateX(46px)}}
+@keyframes cinematicSweep{0%,38%{transform:translateX(-130%)}64%{transform:translateX(130%)}100%{transform:translateX(130%)}}
+@keyframes reflectSweep{from{transform:translateX(-140%)}to{transform:translateX(140%)}}
+@keyframes trophyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes haloSpin{to{transform:rotate(360deg)}}
+@keyframes spark{0%{transform:translate(0,0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+@keyframes rotateField{to{transform:rotate(360deg)}}
+@keyframes fogPulse{0%{opacity:.52}100%{opacity:.86}}
+@keyframes driftOne{0%,100%{transform:translate(0,0)}50%{transform:translate(36px,34px)}}
+@keyframes driftTwo{0%,100%{transform:translate(0,0)}50%{transform:translate(-32px,-28px)}}
+@keyframes floatParticle{0%{transform:translateY(100vh) translateX(0);opacity:0}10%,90%{opacity:.34}100%{transform:translateY(-10vh) translateX(20px);opacity:0}}
+@media(max-width:768px){
+ body{cursor:auto}
+ .cursor-dot,.cursor-ring{display:none}
+ nav ul{display:none}
+ .hamburger{display:block}
+ .hero h1{font-size:42px}
+ section{padding:80px 7%}
+ .card{transition:box-shadow .25s var(--ease)}
+ .trophy-stage{margin-bottom:28px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation:none !important;transition:none !important}
+ [data-reveal]{opacity:1 !important;transform:none !important}
+ body{cursor:auto}
+ .cursor-dot,.cursor-ring{display:none}
+}
+</style>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true">
-    <div class="ambient-gradient"></div>
-    <div class="ambient-grid"></div>
-    <div class="ambient-beams"></div>
-    <div class="ambient-streaks" id="ambientStreaks"></div>
-    <div class="ambient-orb orb-a"></div>
-    <div class="ambient-orb orb-b"></div>
-    <div class="ambient-orb orb-c"></div>
-    <div class="ambient-particles" id="ambientParticles"></div>
-    <div class="ambient-vignette"></div>
-  </div>
-  <div class="bg-layer" aria-hidden="true"></div>
-  <header class="topbar glass">
-    <div class="brand">@nu gaming</div>
-    <nav>
-      <a href="#overview">Overview</a>
-      <a href="#intel">Pro Intel</a>
-      <a href="#register">Register</a>
-    </nav>
-    <a class="btn ghost" href="#register">Join Now</a>
-  </header>
 
-  <main>
-    <section class="hero" id="overview">
-      <p class="eyebrow">Tournament Platform</p>
-      <h1>Enter the Next-Gen <span>Esports Arena</span></h1>
-      <p class="sub">Live public API feeds, smooth cinematic visuals, and instant squad registration powered by @nu gaming backend.</p>
-      <div class="hero-actions">
-        <a class="btn" href="#register">Register Squad</a>
-        <button class="btn ghost" id="refreshData" type="button">Refresh Live Data</button>
-      </div>
-      <div class="stats-grid">
-        <article class="card"><h3 id="players">--</h3><p>Players</p></article>
-        <article class="card"><h3 id="teams">--</h3><p>Teams</p></article>
-        <article class="card"><h3 id="tournaments">--</h3><p>Tournaments</p></article>
-        <article class="card"><h3 id="prizePool">--</h3><p>Prize Pool</p></article>
-      </div>
-      <p class="countdown">Next event in <strong id="countdownText">Loading...</strong></p>
-    </section>
+<div class="scroll-progress" aria-hidden="true"></div>
+<div class="atmosphere" aria-hidden="true">
+<div class="gradient-field"></div>
+<div class="fog"></div>
+<div class="blob blob-orange"></div>
+<div class="blob blob-blue"></div>
+<div class="particles" id="particles"></div>
+</div>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
 
-    <section class="panel" id="intel">
-      <div>
-        <h2>OpenDota Pro Players</h2>
-        <p>Using free public API data (from public-apis list) to show active pro scene snapshot.</p>
-        <ul id="proPlayers" class="list"></ul>
-      </div>
-      <div>
-        <h2>CS2 News Feed</h2>
-        <p>Steam public endpoint for latest update headlines.</p>
-        <ul id="steamNews" class="list"></ul>
-      </div>
-    </section>
+<nav>
+<div class="logo">@nu gaming</div>
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#countdown">Countdown</a></li>
+<li><a href="#characters">Characters</a></li>
+<li><a href="#tournaments">Tournaments</a></li>
+<li><a href="#teams">Teams</a></li>
+<li><a href="#players">Players</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+<div class="hamburger">☰</div>
+</nav>
 
-    <section class="panel register" id="register">
-      <div>
-        <h2>Register Your Squad</h2>
-        <p>Fast application through local @nu gaming backend.</p>
-      </div>
-      <form id="registerForm" class="form">
-        <input name="squadName" placeholder="Squad Name" required />
-        <input name="captainUid" placeholder="Captain UID" required />
-        <input name="email" type="email" placeholder="Email" required />
-        <textarea name="message" placeholder="Message (optional)"></textarea>
-        <button class="btn" type="submit">Submit Registration</button>
-      </form>
-      <p id="formStatus" class="status" aria-live="polite"></p>
-    </section>
-  </main>
+<section class="hero" id="home">
+<div class="hero-content">
+<h1 class="hero-title">FREE FIRE CHAMPIONSHIP</h1>
+<p class="hero-subtitle">South India's Ultimate Tournament Platform</p>
+<button class="btn">Join Tournament</button>
+</div>
+</section>
 
-  <script src="./app.js"></script>
+<section id="countdown" class="reveal-slide-up" data-reveal>
+<h2 class="title">⏳ NEXT TOURNAMENT</h2>
+<div class="timer">
+<div class="timebox"><h3 id="days">00</h3><p>Days</p></div>
+<div class="timebox"><h3 id="hours">00</h3><p>Hours</p></div>
+<div class="timebox"><h3 id="mins">00</h3><p>Minutes</p></div>
+<div class="timebox"><h3 id="secs">00</h3><p>Seconds</p></div>
+</div>
+</section>
+
+<section id="characters" class="reveal-scale" data-reveal>
+<h2 class="title">🎮 Character Showcase</h2>
+<div class="grid">
+<div class="card"><h3>ALOK</h3><p>Drop The Beat</p></div>
+<div class="card"><h3>CHRONO</h3><p>Time Turner</p></div>
+<div class="card"><h3>KELLY</h3><p>Dash Ability</p></div>
+</div>
+</section>
+
+<section id="stats" class="reveal-fade-lift" data-reveal>
+<h2 class="title">📊 Live Stats</h2>
+<div class="stats">
+<div class="card stat"><h2>2500+</h2><p>Players</p></div>
+<div class="card stat"><h2>200+</h2><p>Teams</p></div>
+<div class="card stat"><h2>75+</h2><p>Tournaments</p></div>
+<div class="card stat"><h2>₹5L+</h2><p>Prize Pool</p></div>
+</div>
+</section>
+
+<section id="tournaments" class="reveal-stagger" data-reveal>
+<h2 class="title">🏆 Tournaments</h2>
+<div class="grid">
+<div class="card"><h3>Elite Battle Royale</h3><p>₹10,000 Prize Pool</p></div>
+<div class="card"><h3>Weekly Clash Squad</h3><p>₹5,000 Prize Pool</p></div>
+<div class="card"><h3>Pro Scrims</h3><p>₹3,000 Prize Pool</p></div>
+</div>
+</section>
+
+<section id="teams" class="reveal-fade-lift" data-reveal>
+<h2 class="title">👑 Hall Of Champions</h2>
+<div class="trophy-stage" aria-hidden="true">
+<div class="trophy-rays"></div>
+<div class="trophy-halo"></div>
+<div class="trophy-core"></div>
+<span class="trophy-particle" style="left:30%;top:64%;--tx:-26px;--ty:-88px"></span>
+<span class="trophy-particle" style="left:54%;top:70%;--tx:16px;--ty:-92px"></span>
+<span class="trophy-particle" style="left:67%;top:60%;--tx:28px;--ty:-76px"></span>
+</div>
+<div class="grid">
+<div class="card"><h3>Team Hunters</h3><p>Season Winner</p></div>
+<div class="card"><h3>Team Alpha</h3><p>Elite Winner</p></div>
+<div class="card"><h3>Team Legends</h3><p>Scrim Winner</p></div>
+</div>
+</section>
+
+<section id="players" class="reveal-fade-lift" data-reveal>
+<h2 class="title">🎯 Top Players</h2>
+<div class="grid">
+<div class="card"><h3>Sniper King</h3><p>KD 6.2</p></div>
+<div class="card"><h3>Hunter X</h3><p>KD 5.8</p></div>
+<div class="card"><h3>Alpha FF</h3><p>KD 5.5</p></div>
+</div>
+</section>
+
+<section id="gallery" class="reveal-zoom" data-reveal>
+<h2 class="title">🖼️ Gallery</h2>
+<div class="grid">
+<div class="card">Tournament Highlights</div>
+<div class="card">Winning Moments</div>
+<div class="card">Best Plays</div>
+</div>
+</section>
+
+<section id="contact" class="reveal-left" data-reveal>
+<h2 class="title">📝 Register Squad</h2>
+<form id="registerForm">
+<input name="squadName" placeholder="Squad Name" required>
+<input name="captainUid" placeholder="Captain UID" required>
+<input name="email" type="email" placeholder="Email" required>
+<textarea name="message" placeholder="Message"></textarea>
+<button class="btn">Register</button>
+</form>
+</section>
+
+<footer>@nu gaming • Free Fire Tournament Platform</footer>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:4000' : window.location.origin;
+let target = new Date().getTime() + 12*24*60*60*1000;
+
+const statTargets = [
+ { key: 'players', fallback: '2500+' },
+ { key: 'teams', fallback: '200+' },
+ { key: 'tournaments', fallback: '75+' },
+ { key: 'prizePool', fallback: '₹5L+' }
+];
+
+async function hydrateFromBackend() {
+ try {
+  const res = await fetch(`${API_BASE}/api/config`);
+  if (!res.ok) return;
+  const data = await res.json();
+
+  if (data.nextTournamentAt) {
+   const parsed = new Date(data.nextTournamentAt).getTime();
+   if (!Number.isNaN(parsed)) target = parsed;
+  }
+
+  if (data.stats) {
+   const nodes = [...document.querySelectorAll('#stats .stat h2')];
+   statTargets.forEach((item, i) => {
+    if (!nodes[i]) return;
+    nodes[i].textContent = data.stats[item.key] || item.fallback;
+   });
+  }
+ } catch (_) {
+  // Frontend still works if backend is not running.
+ }
+}
+
+hydrateFromBackend();
+
+setInterval(()=>{
+const now = new Date().getTime();
+const d = target-now;
+document.getElementById('days').innerText=Math.floor(d/(1000*60*60*24));
+document.getElementById('hours').innerText=Math.floor((d%(1000*60*60*24))/(1000*60*60));
+document.getElementById('mins').innerText=Math.floor((d%(1000*60*60))/(1000*60));
+document.getElementById('secs').innerText=Math.floor((d%(1000*60))/1000);
+},1000);
+
+const body = document.body;
+const nav = document.querySelector('nav');
+const navLinks = [...document.querySelectorAll('nav a')];
+const navList = document.querySelector('nav ul');
+const progressBar = document.querySelector('.scroll-progress');
+const hero = document.querySelector('.hero');
+const heroContent = document.querySelector('.hero-content');
+const cursorDot = document.querySelector('.cursor-dot');
+const cursorRing = document.querySelector('.cursor-ring');
+const revealSections = [...document.querySelectorAll('[data-reveal]')];
+const cards = [...document.querySelectorAll('.card')];
+const buttons = [...document.querySelectorAll('.btn')];
+const statsSection = document.getElementById('stats');
+const registerForm = document.getElementById('registerForm');
+
+if (registerForm) {
+ registerForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const submitBtn = registerForm.querySelector('button[type="submit"],button');
+  const originalText = submitBtn ? submitBtn.textContent : 'Register';
+  const formData = new FormData(registerForm);
+  const payload = {
+   squadName: (formData.get('squadName') || '').toString().trim(),
+   captainUid: (formData.get('captainUid') || '').toString().trim(),
+   email: (formData.get('email') || '').toString().trim(),
+   message: (formData.get('message') || '').toString().trim()
+  };
+
+  if (submitBtn) {
+   submitBtn.disabled = true;
+   submitBtn.textContent = 'Submitting...';
+  }
+
+  try {
+   const response = await fetch(`${API_BASE}/api/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+   });
+
+   if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Registration failed');
+   }
+
+   registerForm.reset();
+   alert('Squad registered successfully. See you in the arena.');
+  } catch (error) {
+   alert(error.message || 'Backend is not reachable. Start the API server and try again.');
+  } finally {
+   if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+   }
+  }
+ });
+}
+
+const splitHeroTitle = () => {
+ const title = document.querySelector('.hero-title');
+ if (!title) return;
+ const text = title.textContent;
+ title.textContent = '';
+ [...text].forEach((letter, idx) => {
+  const span = document.createElement('span');
+  span.className = 'char';
+  span.style.setProperty('--i', idx);
+  span.textContent = letter === ' ' ? '\u00a0' : letter;
+  title.appendChild(span);
+ });
+};
+
+const initParticles = () => {
+ const holder = document.getElementById('particles');
+ if (!holder) return;
+ const count = window.innerWidth < 768 ? 12 : 22;
+ for (let i = 0; i < count; i++) {
+  const p = document.createElement('span');
+  p.className = 'particle';
+  p.style.left = `${Math.random() * 100}%`;
+  p.style.setProperty('--dur', `${14 + Math.random() * 14}s`);
+  p.style.setProperty('--delay', `${Math.random() * -20}s`);
+  holder.appendChild(p);
+ }
+};
+
+const setActiveNav = () => {
+ let active = navLinks[0];
+ for (const link of navLinks) {
+  const id = link.getAttribute('href').slice(1);
+  const section = document.getElementById(id);
+  if (!section) continue;
+  const top = section.offsetTop - 130;
+  if (window.scrollY >= top) active = link;
+ }
+ navLinks.forEach((l) => l.classList.remove('active'));
+ active.classList.add('active');
+ if (navList) {
+  const left = active.offsetLeft;
+  const width = active.offsetWidth;
+  navList.style.setProperty('--indicator-left', `${left}px`);
+  navList.style.setProperty('--indicator-width', `${width}px`);
+ }
+};
+
+let ticking = false;
+const onScroll = () => {
+ if (ticking) return;
+ ticking = true;
+ requestAnimationFrame(() => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
+  progressBar.style.width = `${progress}%`;
+  nav.classList.toggle('scrolled', window.scrollY > 14);
+
+  const y = window.scrollY;
+    hero.style.backgroundPosition = `center ${Math.min(20, y * 0.04)}px`;
+    heroContent.style.transform = `translate3d(0, ${Math.min(18, y * 0.058)}px, 0)`;
+  setActiveNav();
+  ticking = false;
+ });
+};
+
+const observer = new IntersectionObserver((entries) => {
+ entries.forEach((entry) => {
+  if (!entry.isIntersecting) return;
+  entry.target.classList.add('in-view');
+  if (entry.target.id === 'stats') startStatCounters();
+  observer.unobserve(entry.target);
+ });
+}, { threshold: 0.26 });
+
+revealSections.forEach((section) => observer.observe(section));
+
+let countersStarted = false;
+function startStatCounters() {
+ if (countersStarted || !statsSection) return;
+ countersStarted = true;
+ const heads = [...statsSection.querySelectorAll('.stat h2')];
+ heads.forEach((el) => {
+  const raw = el.textContent.trim();
+  const match = raw.match(/^([^\d]*)([\d.]+)(.*)$/);
+  if (!match) return;
+  const prefix = match[1];
+  const targetNumber = Number(match[2]);
+  const suffix = match[3];
+  let start = null;
+    const duration = 1500;
+
+  const step = (ts) => {
+   if (!start) start = ts;
+   const p = Math.min(1, (ts - start) / duration);
+   const eased = 1 - Math.pow(1 - p, 3);
+   const val = targetNumber * eased;
+   const output = targetNumber % 1 === 0 ? Math.round(val).toString() : val.toFixed(1);
+   el.textContent = `${prefix}${output}${suffix}`;
+   if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+ });
+}
+
+const initCardPhysics = () => {
+ if (window.matchMedia('(pointer:coarse)').matches) return;
+ cards.forEach((card) => {
+  card.addEventListener('mousemove', (e) => {
+   const r = card.getBoundingClientRect();
+   const px = (e.clientX - r.left) / r.width;
+   const py = (e.clientY - r.top) / r.height;
+   const rx = (0.5 - py) * 8;
+   const ry = (px - 0.5) * 10;
+   card.style.transform = `perspective(1000px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`;
+   card.style.boxShadow = `${-ry * 1.8}px ${rx * 1.8 + 20}px 34px rgba(5,8,14,.56),0 0 22px rgba(255,122,0,.26)`;
+  });
+  card.addEventListener('mouseleave', () => {
+   card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+   card.style.boxShadow = '';
+  });
+ });
+};
+
+const initButtons = () => {
+ buttons.forEach((btn) => {
+  btn.addEventListener('mousemove', (e) => {
+   if (window.matchMedia('(pointer:coarse)').matches) return;
+   const r = btn.getBoundingClientRect();
+   const dx = e.clientX - (r.left + r.width / 2);
+   const dy = e.clientY - (r.top + r.height / 2);
+   btn.style.transform = `translate3d(${dx * 0.12}px, ${dy * 0.12}px, 0)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+   btn.style.transform = 'translate3d(0,0,0)';
+  });
+  btn.addEventListener('click', (e) => {
+   const ripple = document.createElement('span');
+   ripple.className = 'ripple';
+   const r = btn.getBoundingClientRect();
+   const size = Math.max(r.width, r.height);
+   ripple.style.width = `${size}px`;
+   ripple.style.height = `${size}px`;
+   ripple.style.left = `${e.clientX - r.left - size / 2}px`;
+   ripple.style.top = `${e.clientY - r.top - size / 2}px`;
+   btn.appendChild(ripple);
+   setTimeout(() => ripple.remove(), 620);
+   btn.style.transform = 'scale(.97)';
+   setTimeout(() => { btn.style.transform = 'translate3d(0,0,0)'; }, 120);
+  });
+ });
+};
+
+const initCursor = () => {
+ if (window.matchMedia('(pointer:coarse)').matches) return;
+ let tx = window.innerWidth / 2;
+ let ty = window.innerHeight / 2;
+ let rx = tx;
+ let ry = ty;
+
+ document.addEventListener('mousemove', (e) => {
+  tx = e.clientX;
+  ty = e.clientY;
+  cursorDot.style.left = `${tx}px`;
+  cursorDot.style.top = `${ty}px`;
+ });
+
+ const loop = () => {
+  rx += (tx - rx) * 0.16;
+  ry += (ty - ry) * 0.16;
+  cursorRing.style.left = `${rx}px`;
+  cursorRing.style.top = `${ry}px`;
+  requestAnimationFrame(loop);
+ };
+ loop();
+
+ [...cards, ...buttons, ...navLinks].forEach((el) => {
+  el.addEventListener('mouseenter', () => cursorRing.classList.add('active'));
+  el.addEventListener('mouseleave', () => cursorRing.classList.remove('active'));
+ });
+};
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', setActiveNav);
+
+splitHeroTitle();
+initParticles();
+setTimeout(() => body.classList.add('loaded'), 220);
+setTimeout(() => {
+ initButtons();
+ initCursor();
+ initCardPhysics();
+ setActiveNav();
+ onScroll();
+}, 180);
+</script>
+
 </body>
 </html>
